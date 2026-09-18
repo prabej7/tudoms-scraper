@@ -1,6 +1,14 @@
+import os
+
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
+from dotenv import load_dotenv
+
+load_dotenv()
+
+EMAIL_USER = os.getenv("EMAIL_USER")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
 
 URL = "https://www.tudoms.org/"
 
@@ -30,7 +38,7 @@ def scrape_result():
         if (
             "result published" in text.lower()
             and "bim" in text.lower()
-            # and "6th semester" in text.lower()
+            and "6th semester" in text.lower()
         ):
             href = urljoin(URL, link["href"])
 
