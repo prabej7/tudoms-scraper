@@ -1,9 +1,10 @@
 import os
+from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
 from dotenv import load_dotenv
+
 
 load_dotenv()
 
@@ -17,16 +18,28 @@ HEADERS = {
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
         "Chrome/140.0.0.0 Safari/537.36"
-    )
+    ),
+    "Accept": (
+        "text/html,application/xhtml+xml,application/xml;"
+        "q=0.9,image/avif,image/webp,*/*;q=0.8"
+    ),
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer": "https://www.google.com/",
+    "Connection": "keep-alive",
 }
 
 
 def scrape_result():
-    response = requests.get(
+    session = requests.Session()
+    session.headers.update(HEADERS)
+
+    response = session.get(
         URL,
-        headers=HEADERS,
-        timeout=10
+        timeout=20
     )
+
+    print("Status:", response.status_code)
+    print("Server:", response.headers.get("Server"))
 
     response.raise_for_status()
 
@@ -50,13 +63,28 @@ def scrape_result():
     return None
 
 
-result = scrape_result()
+def main():
+    try:
+        result = scrape_result()
 
-if result:
-    print("Result found!")
-    print("Title:", result["title"])
-    print("Link:", result["link"])
-else:
-    print("No matching result found.")
+        if result:
+            print("Result found!")
+            print("Title:", result["title"])
+            print("Link:", result["link"])
+        else:
+            print("No matching result found.")
 
-print("Scraping completed!")
+        print("Scraping completed!")
+
+    except requests.exceptions.HTTPError as error:
+        print("HTTP error:", error)
+
+    except requests.exceptions.RequestException as error:
+        print("Request failed:", error)
+
+    except Exception as error:
+        print("Unexpected error:", error)
+
+
+if __name__ == "__main__":
+    main()
