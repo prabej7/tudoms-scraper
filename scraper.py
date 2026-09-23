@@ -50,7 +50,7 @@ def scrape_result():
         if (
             "result published" in text.lower()
             and "bim" in text.lower()
-            and "6th"
+            and "6th" in text.lower()
         ):
             href = urljoin(URL, link["href"])
 
